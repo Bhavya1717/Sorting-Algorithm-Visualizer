@@ -47,9 +47,10 @@
         .algorithm-title {
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 0.5rem;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.25rem;
+            /* Reset default margins/borders for title when wrapped in flex */
+            margin: 0;
+            border-bottom: none; 
+            padding-bottom: 0;
         }
 
         .algorithm-description {
@@ -69,12 +70,12 @@
 
     <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Sorting Algorithm Visualizer (6 Algorithms)</h1>
-        <p class="text-gray-600 mb-6">Observe the different approaches of six common sorting algorithms simultaneously.</p>
+        <p class="text-gray-600 mb-6">Observe the different approaches of six common sorting algorithms simultaneously, or run them individually.</p>
 
         <div class="flex flex-col sm:flex-row gap-4 mb-8">
             <button id="startVisualization"
                     class="w-full sm:w-auto bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                Start Visualization
+                Start All Visualizations
             </button>
             <button id="resetArray"
                     class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -92,7 +93,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Row 1: Bubble Sort -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Bubble Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Bubble Sort</h2>
+                    <button id="runBubbleSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="bubbleSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 for i from 0 to n-1:
@@ -104,7 +108,10 @@ for i from 0 to n-1:
 
             <!-- Row 1: Insertion Sort -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Insertion Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Insertion Sort</h2>
+                    <button id="runInsertionSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="insertionSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 for i from 1 to n-1:
@@ -119,7 +126,10 @@ for i from 1 to n-1:
 
             <!-- Row 1: Quick Sort -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Quick Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Quick Sort</h2>
+                    <button id="runQuickSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="quickSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 function quick_sort(low, high):
@@ -142,7 +152,10 @@ function partition(low, high):
 
             <!-- Row 2: Selection Sort (NEW) -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Selection Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Selection Sort</h2>
+                    <button id="runSelectionSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="selectionSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 for i from 0 to n-2:
@@ -156,7 +169,10 @@ for i from 0 to n-2:
 
             <!-- Row 2: Heap Sort (NEW) -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Heap Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Heap Sort</h2>
+                    <button id="runHeapSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="heapSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 function build_max_heap():
@@ -184,7 +200,10 @@ for i from n-1 down to 1:
 
             <!-- Row 2: Merge Sort (IMPROVED VISUAL) -->
             <div class="bg-white p-4 rounded-xl shadow-lg">
-                <h2 class="algorithm-title">Merge Sort</h2>
+                <div class="flex justify-between items-center mb-2 border-b-2 border-gray-200 pb-1">
+                    <h2 class="algorithm-title">Merge Sort</h2>
+                    <button id="runMergeSort" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-1 px-3 rounded-md shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+                </div>
                 <div id="mergeSortVisualizer" class="visualizer"></div>
                 <pre class="algorithm-description">
 function merge_sort(p, r):
@@ -216,6 +235,15 @@ function merge(p, q, r):
         const startButton = document.getElementById('startVisualization');
         const resetButton = document.getElementById('resetArray');
         const speedSelector = document.getElementById('speedSelector');
+        
+        const ALGORITHMS = {
+            'bubbleSort': { containerId: 'bubbleSortVisualizer', actionGetter: getBubbleSortActions, runBtnId: 'runBubbleSort' },
+            'insertionSort': { containerId: 'insertionSortVisualizer', actionGetter: getInsertionSortActions, runBtnId: 'runInsertionSort' },
+            'quickSort': { containerId: 'quickSortVisualizer', actionGetter: getQuickSortActions, runBtnId: 'runQuickSort' },
+            'selectionSort': { containerId: 'selectionSortVisualizer', actionGetter: getSelectionSortActions, runBtnId: 'runSelectionSort' },
+            'heapSort': { containerId: 'heapSortVisualizer', actionGetter: getHeapSortActions, runBtnId: 'runHeapSort' },
+            'mergeSort': { containerId: 'mergeSortVisualizer', actionGetter: getMergeSortActions, runBtnId: 'runMergeSort' }
+        };
 
         // Initial array state
         let initialArray = [];
@@ -277,7 +305,6 @@ function merge(p, q, r):
             
             getBarByValue(value) {
                 // Find the bar element based on its data-value attribute, without checking its sorted status
-                // since a bar might be sorted relative to a smaller segment but needed for a larger merge.
                 // We rely on the uniqueness of values.
                 return this.container.querySelector(`[data-value="${value}"]`);
             }
@@ -693,7 +720,7 @@ function merge(p, q, r):
         }
 
 
-        // --- Main Visualization Runner ---
+        // --- Main Visualization Runner Functions ---
 
         /**
          * Runs the full visualization for a single algorithm.
@@ -713,50 +740,68 @@ function merge(p, q, r):
                  console.log(`${visualizer.container.id} finished sorting.`);
             }
         }
+        
+        /**
+         * Disables all control elements.
+         * @param {string | null} excludeBtnId - Optional ID of a button to keep enabled.
+         */
+        function setControlsDisabled(disabled) {
+            startButton.disabled = disabled;
+            resetButton.disabled = disabled;
+            speedSelector.disabled = disabled;
+            
+            Object.values(ALGORITHMS).forEach(alg => {
+                const btn = document.getElementById(alg.runBtnId);
+                if (btn) btn.disabled = disabled;
+            });
+        }
+        
+        /**
+         * Runs a single visualization.
+         */
+        async function runSingleVisualization(containerId, actionGetter) {
+            if (isRunning) return;
+            
+            isRunning = true;
+            setControlsDisabled(true); // Disable all controls globally
+
+            // Re-render the initial array for this single visualizer
+            renderInitialArray(containerId, initialArray);
+
+            // Generate actions and run
+            const actions = actionGetter(initialArray);
+            const visualizer = new Visualizer(containerId);
+            
+            await runVisualization(visualizer, actions);
+
+            // Re-enable buttons after run
+            isRunning = false;
+            setControlsDisabled(false);
+        }
 
         /**
-         * Initializes and starts all six visualizations.
+         * Initializes and starts all six visualizations concurrently.
          */
         async function startAllVisualizations() {
             if (isRunning) return;
             isRunning = true;
-            startButton.disabled = true;
-            resetButton.disabled = true;
-            speedSelector.disabled = true;
-
-            // Generate actions for all six algorithms
-            const bubbleActions = getBubbleSortActions(initialArray);
-            const insertionActions = getInsertionSortActions(initialArray);
-            const quickActions = getQuickSortActions(initialArray);
-            const selectionActions = getSelectionSortActions(initialArray);
-            const heapActions = getHeapSortActions(initialArray);
-            const mergeActions = getMergeSortActions(initialArray);
-
-            // Initialize visualizers
-            const bubbleViz = new Visualizer('bubbleSortVisualizer');
-            const insertionViz = new Visualizer('insertionSortVisualizer');
-            const quickViz = new Visualizer('quickSortVisualizer');
-            const selectionViz = new Visualizer('selectionSortVisualizer');
-            const heapViz = new Visualizer('heapSortVisualizer');
-            const mergeViz = new Visualizer('mergeSortVisualizer');
+            setControlsDisabled(true);
 
             // Set up an array of promises to run them concurrently
-            const promises = [
-                runVisualization(bubbleViz, bubbleActions),
-                runVisualization(insertionViz, insertionActions),
-                runVisualization(quickViz, quickActions),
-                runVisualization(selectionViz, selectionActions),
-                runVisualization(heapViz, heapActions),
-                runVisualization(mergeViz, mergeActions)
-            ];
+            const promises = Object.values(ALGORITHMS).map(alg => {
+                // Render initial array for each before running
+                renderInitialArray(alg.containerId, initialArray);
+                
+                const actions = alg.actionGetter(initialArray);
+                const visualizer = new Visualizer(alg.containerId);
+                return runVisualization(visualizer, actions);
+            });
 
             // Wait for all to finish
             await Promise.all(promises);
 
             isRunning = false;
-            startButton.disabled = false;
-            resetButton.disabled = false;
-            speedSelector.disabled = false;
+            setControlsDisabled(false);
         }
         
         /**
@@ -767,28 +812,33 @@ function merge(p, q, r):
             initialArray = generateRandomArray();
 
             // 2. Render the initial array state in all containers
-            renderInitialArray('bubbleSortVisualizer', initialArray);
-            renderInitialArray('insertionSortVisualizer', initialArray);
-            renderInitialArray('quickSortVisualizer', initialArray);
-            renderInitialArray('selectionSortVisualizer', initialArray);
-            renderInitialArray('heapSortVisualizer', initialArray);
-            renderInitialArray('mergeSortVisualizer', initialArray);
-
+            Object.values(ALGORITHMS).forEach(alg => {
+                renderInitialArray(alg.containerId, initialArray);
+            });
 
             // 3. Set initial speed
             ANIMATION_SPEED_MS = parseInt(speedSelector.value);
-
+            
             // 4. Attach event listeners
-            startButton.addEventListener('click', startAllVisualizations);
-            resetButton.addEventListener('click', () => {
+            startButton.onclick = startAllVisualizations;
+            resetButton.onclick = () => {
                 if (isRunning) return;
                 setup(); // Re-run setup to reset array and visualization
-            });
-            speedSelector.addEventListener('change', (e) => {
+            };
+            speedSelector.onchange = (e) => {
                 ANIMATION_SPEED_MS = parseInt(e.target.value);
+            };
+            
+            // 5. Attach individual run button listeners
+            Object.values(ALGORITHMS).forEach(alg => {
+                const btn = document.getElementById(alg.runBtnId);
+                if (btn) {
+                    btn.onclick = () => runSingleVisualization(alg.containerId, alg.actionGetter);
+                }
             });
             
-            startButton.textContent = 'Start Visualization';
+            startButton.textContent = 'Start All Visualizations';
+            setControlsDisabled(false);
         }
 
         // Initialize the app on window load
