@@ -81,6 +81,10 @@
                     class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Reset Array
             </button>
+            <button id="pauseVisualization"
+                    class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Pause
+            </button>
             <select id="speedSelector" class="w-full sm:w-auto py-3 px-4 rounded-lg border border-gray-300 shadow-sm focus:ring-violet-500 focus:border-violet-500">
                 <option value="400">Slow (400ms)</option>
                 <option value="150" selected>Medium (150ms)</option>
@@ -230,10 +234,12 @@ function merge(p, q, r):
         const MAX_VALUE = 90; // Max percentage height for the bars
         let ANIMATION_SPEED_MS = 150;
         let isRunning = false;
+        let isPaused = false; // NEW PAUSE STATE
         
         // DOM Elements
         const startButton = document.getElementById('startVisualization');
         const resetButton = document.getElementById('resetArray');
+        const pauseButton = document.getElementById('pauseVisualization'); // NEW PAUSE BUTTON
         const speedSelector = document.getElementById('speedSelector');
         
         const ALGORITHMS = {
@@ -250,6 +256,20 @@ function merge(p, q, r):
 
         // Utility function to introduce a delay in an async function
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        // NEW function to wait if the visualization is paused
+        const waitIfPaused = () => new Promise(resolve => {
+            const check = () => {
+                // If running AND paused, keep checking. If not running, or not paused, proceed.
+                if (isRunning && isPaused) {
+                    requestAnimationFrame(check); // Use RAF for smoother checking
+                } else {
+                    resolve();
+                }
+            };
+            check();
+        });
+
 
         // --- Array Generation and Management ---
 
@@ -733,6 +753,9 @@ function merge(p, q, r):
 
                 // Execute the action visually
                 await visualizer.executeAction(action);
+                
+                // PAUSE CHECK: Wait here if the user has paused the visualization
+                await waitIfPaused(); 
 
                 nextIndex++;
             }
@@ -742,20 +765,61 @@ function merge(p, q, r):
         }
         
         /**
-         * Disables all control elements.
-         * @param {string | null} excludeBtnId - Optional ID of a button to keep enabled.
+         * Toggles the global pause state.
          */
-        function setControlsDisabled(disabled) {
-            startButton.disabled = disabled;
-            resetButton.disabled = disabled;
-            speedSelector.disabled = disabled;
+        function togglePause() {
+            if (!isRunning) return;
+
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseButton.textContent = 'Resume';
+                pauseButton.classList.replace('bg-yellow-500', 'bg-red-500');
+            } else {
+                pauseButton.textContent = 'Pause';
+                pauseButton.classList.replace('bg-red-500', 'bg-yellow-500');
+            }
+        }
+
+        /**
+         * Updates the disabled state of control buttons based on the mode.
+         * @param {string} mode - 'start_all', 'start_single', or 'stop'.
+         * @param {string | null} [currentContainerId=null] - The container ID if running single.
+         */
+        function updateControlState(mode, currentContainerId = null) {
+            const running = mode !== 'stop';
             
+            // Start All and Reset are disabled while anything is running
+            startButton.disabled = running;
+            resetButton.disabled = running;
+            
+            // Pause is enabled only while running
+            pauseButton.disabled = !running; 
+            
+            // Speed selector MUST remain ENABLED (as per user request)
+            speedSelector.disabled = false; 
+
             Object.values(ALGORITHMS).forEach(alg => {
                 const btn = document.getElementById(alg.runBtnId);
-                if (btn) btn.disabled = disabled;
+                if (btn) {
+                    if (mode === 'stop') {
+                        btn.disabled = false; // Enable all run buttons on stop
+                    } else if (mode === 'start_all') {
+                        btn.disabled = true; // Disable all run buttons on start_all
+                    } else if (mode === 'start_single') {
+                        // Disable ONLY the currently running button, keep others ENABLED (as per user request)
+                        btn.disabled = (alg.containerId === currentContainerId);
+                    }
+                }
             });
+
+            // Reset pause button state if stopping
+            if (mode === 'stop') {
+                isPaused = false;
+                pauseButton.textContent = 'Pause';
+                pauseButton.classList.replace('bg-red-500', 'bg-yellow-500');
+            }
         }
-        
+
         /**
          * Runs a single visualization.
          */
@@ -763,7 +827,7 @@ function merge(p, q, r):
             if (isRunning) return;
             
             isRunning = true;
-            setControlsDisabled(true); // Disable all controls globally
+            updateControlState('start_single', containerId);
 
             // Re-render the initial array for this single visualizer
             renderInitialArray(containerId, initialArray);
@@ -776,7 +840,7 @@ function merge(p, q, r):
 
             // Re-enable buttons after run
             isRunning = false;
-            setControlsDisabled(false);
+            updateControlState('stop');
         }
 
         /**
@@ -785,7 +849,7 @@ function merge(p, q, r):
         async function startAllVisualizations() {
             if (isRunning) return;
             isRunning = true;
-            setControlsDisabled(true);
+            updateControlState('start_all');
 
             // Set up an array of promises to run them concurrently
             const promises = Object.values(ALGORITHMS).map(alg => {
@@ -801,7 +865,7 @@ function merge(p, q, r):
             await Promise.all(promises);
 
             isRunning = false;
-            setControlsDisabled(false);
+            updateControlState('stop');
         }
         
         /**
@@ -821,6 +885,7 @@ function merge(p, q, r):
             
             // 4. Attach event listeners
             startButton.onclick = startAllVisualizations;
+            pauseButton.onclick = togglePause; // NEW PAUSE LISTENER
             resetButton.onclick = () => {
                 if (isRunning) return;
                 setup(); // Re-run setup to reset array and visualization
@@ -838,7 +903,7 @@ function merge(p, q, r):
             });
             
             startButton.textContent = 'Start All Visualizations';
-            setControlsDisabled(false);
+            updateControlState('stop'); // Set initial state
         }
 
         // Initialize the app on window load
