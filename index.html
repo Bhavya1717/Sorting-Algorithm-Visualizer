@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithm Visualizer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the bars */
+        .bar {
+            width: 1rem; /* Slightly reduced width to fit 6 algorithms */
+            margin: 0 1px;
+            background-color: #3b82f6; /* Blue-500 default */
+            transition: all 0.1s ease-in-out; /* Faster transitions for 6 algorithms */
+            border-radius: 2px 2px 0 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 0.6rem; /* Smaller font for values */
+            color: white;
+            padding-bottom: 2px;
+            position: relative;
+            min-height: 5px; /* Ensure tiny bars are visible */
+        }
+
+        /* Color classes for visualization */
+        .bar-default { background-color: #3b82f6; } /* Blue */
+        .bar-compare { background-color: #f59e0b; } /* Amber/Yellow */
+        .bar-swap { background-color: #ef4444; } /* Red */
+        .bar-sorted { background-color: #10b981; } /* Emerald/Green */
+        .bar-pivot { background-color: #8b5cf6; } /* Violet/Purple */
+
+        /* Animation container styles */
+        .visualizer {
+            height: 180px; /* Reduced height to fit 6 in view */
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0.5rem 0.25rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            overflow: hidden; 
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        .algorithm-title {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.25rem;
+        }
+
+        .algorithm-description {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans p-6 md:p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Sorting Algorithm Visualizer (6 Algorithms)</h1>
+        <p class="text-gray-600 mb-6">Observe the different approaches of six common sorting algorithms simultaneously.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+            <button id="startVisualization"
+                    class="w-full sm:w-auto bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Start Visualization
+            </button>
+            <button id="resetArray"
+                    class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Reset Array
+            </button>
+            <select id="speedSelector" class="w-full sm:w-auto py-3 px-4 rounded-lg border border-gray-300 shadow-sm focus:ring-violet-500 focus:border-violet-500">
+                <option value="400">Slow (400ms)</option>
+                <option value="150" selected>Medium (150ms)</option>
+                <option value="50">Fast (50ms)</option>
+                <option value="10">Turbo (10ms)</option>
+            </select>
+        </div>
+
+        <!-- Visualization Containers (3 columns, 2 rows for 6 algorithms) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Row 1: Bubble Sort -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Bubble Sort</h2>
+                <div id="bubbleSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+for i from 0 to n-1:
+  for j from 0 to n-i-2:
+    if array[j] > array[j+1]:
+      swap(array[j], array[j+1])
+                </pre>
+            </div>
+
+            <!-- Row 1: Insertion Sort -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Insertion Sort</h2>
+                <div id="insertionSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+for i from 1 to n-1:
+  key = array[i]
+  j = i - 1
+  // Move key backward by swapping until sorted position is found
+  while j >= 0 AND array[j] > array[j+1]:
+    swap(array[j], array[j+1])
+    j = j - 1
+                </pre>
+            </div>
+
+            <!-- Row 1: Quick Sort -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Quick Sort</h2>
+                <div id="quickSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+function quick_sort(low, high):
+  if low < high:
+    pivot_index = partition(low, high)
+    quick_sort(low, pivot_index - 1)
+    quick_sort(pivot_index + 1, high)
+
+function partition(low, high):
+  pivot = array[high]
+  i = low - 1
+  for j from low to high - 1:
+    if array[j] < pivot:
+      i++
+      swap(array[i], array[j])
+  swap(array[i + 1], array[high])
+  return i + 1
+                </pre>
+            </div>
+
+            <!-- Row 2: Selection Sort (NEW) -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Selection Sort</h2>
+                <div id="selectionSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+for i from 0 to n-2:
+  min_idx = i
+  for j from i+1 to n-1:
+    if array[j] < array[min_idx]:
+      min_idx = j
+  swap(array[i], array[min_idx])
+                </pre>
+            </div>
+
+            <!-- Row 2: Heap Sort (NEW) -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Heap Sort</h2>
+                <div id="heapSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+function build_max_heap():
+  for i from n/2 - 1 down to 0:
+    heapify(n, i)
+
+function heapify(n, i):
+  largest = i
+  l = 2*i + 1
+  r = 2*i + 2
+  if l < n AND array[l] > array[largest]:
+    largest = l
+  if r < n AND array[r] > array[largest]:
+    largest = r
+  if largest != i:
+    swap(array[i], array[largest])
+    heapify(n, largest)
+
+build_max_heap()
+for i from n-1 down to 1:
+  swap(array[0], array[i])
+  heapify(i, 0)
+                </pre>
+            </div>
+
+            <!-- Row 2: Merge Sort (IMPROVED VISUAL) -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="algorithm-title">Merge Sort</h2>
+                <div id="mergeSortVisualizer" class="visualizer"></div>
+                <pre class="algorithm-description">
+function merge_sort(p, r):
+  if p < r:
+    q = floor((p + r) / 2)
+    merge_sort(p, q)
+    merge_sort(q + 1, r)
+    merge(p, q, r)
+
+function merge(p, q, r):
+  // Compares and writes elements from the two sorted
+  // sub-arrays back into the main array sequentially.
+  // Visualization now shows comparisons and the sequential
+  // 'writing' of the sorted result back into the array.
+                </pre>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Configuration and Global State ---
+        const ARRAY_SIZE = 15;
+        const MAX_VALUE = 90; // Max percentage height for the bars
+        let ANIMATION_SPEED_MS = 150;
+        let isRunning = false;
+        
+        // DOM Elements
+        const startButton = document.getElementById('startVisualization');
+        const resetButton = document.getElementById('resetArray');
+        const speedSelector = document.getElementById('speedSelector');
+
+        // Initial array state
+        let initialArray = [];
+
+        // Utility function to introduce a delay in an async function
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // --- Array Generation and Management ---
+
+        /**
+         * Generates a new array of random unique integers.
+         * @returns {number[]} The generated array.
+         */
+        function generateRandomArray() {
+            const arr = [];
+            while (arr.length < ARRAY_SIZE) {
+                const randomVal = Math.floor(Math.random() * (MAX_VALUE - 5) + 5); // Values between 5 and MAX_VALUE
+                if (!arr.includes(randomVal)) {
+                    arr.push(randomVal);
+                }
+            }
+            return arr;
+        }
+
+        /**
+         * Initializes the array and renders the initial bars in the specified container.
+         * @param {string} containerId - The ID of the container div.
+         * @param {number[]} array - The array data.
+         */
+        function renderInitialArray(containerId, array) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear previous content
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar bar-default';
+                bar.style.height = `${value}%`;
+                bar.style.order = index; // Used to keep the visual order corresponding to the array index
+                bar.setAttribute('data-value', value);
+                bar.setAttribute('data-index', index);
+                container.appendChild(bar);
+            });
+        }
+
+        // --- Visualizer Class ---
+
+        class Visualizer {
+            /**
+             * @param {string} containerId - The ID of the container element.
+             */
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.isAnimating = false;
+            }
+
+            getBar(index) {
+                // Find the bar element based on its data-index attribute (the logical array index)
+                return this.container.querySelector(`[data-index="${index}"]`);
+            }
+            
+            getBarByValue(value) {
+                // Find the bar element based on its data-value attribute, without checking its sorted status
+                // since a bar might be sorted relative to a smaller segment but needed for a larger merge.
+                // We rely on the uniqueness of values.
+                return this.container.querySelector(`[data-value="${value}"]`);
+            }
+
+            /**
+             * Executes a single recorded action with animation.
+             * @param {object} action - The action object from the sorting logic.
+             */
+            async executeAction(action) {
+                this.isAnimating = true;
+                const bars = Array.from(this.container.children); 
+
+                const clearColors = () => {
+                    bars.forEach(bar => {
+                        if (!bar.classList.contains('bar-sorted')) {
+                            bar.className = 'bar bar-default';
+                        }
+                    });
+                };
+
+                // Clear temporary comparison/swap colors from previous step
+                clearColors();
+
+                switch (action.type) {
+                    case 'compare':
+                        // Highlight elements being compared (Yellow)
+                        action.indices.forEach(i => {
+                            const bar = this.getBar(i);
+                            if (bar && !bar.classList.contains('bar-sorted')) {
+                                bar.className = 'bar bar-compare';
+                            }
+                        });
+                        break;
+
+                    case 'swap':
+                        // Highlight elements being swapped (Red)
+                        const [i, j] = action.indices;
+                        const barI = this.getBar(i);
+                        const barJ = this.getBar(j);
+
+                        if (barI && barJ) {
+                            barI.className = 'bar bar-swap';
+                            barJ.className = 'bar bar-swap';
+
+                            // Actual DOM element swap to visually show the movement
+                            const orderI = barI.style.order;
+                            barI.style.order = barJ.style.order;
+                            barJ.style.order = orderI;
+
+                            // Swap the hidden data-index to track positions internally for future steps
+                            barI.setAttribute('data-index', j);
+                            barJ.setAttribute('data-index', i);
+                        } else {
+                             console.error(`Swap Error: One or both bars at indices [${i}, ${j}] not found. (BarI: ${!!barI}, BarJ: ${!!barJ})`);
+                        }
+                        break;
+                    
+                    case 'write_value': // Used for Merge Sort (non-in-place result)
+                        const targetIndex = action.index;
+                        const valueToWrite = action.value;
+                        
+                        // Find the bar element that holds this value (anywhere)
+                        const valueBar = this.getBarByValue(valueToWrite);
+                        // Get the bar currently occupying the target position (to steal its visual order)
+                        const targetBar = this.getBar(targetIndex);
+
+                        if (valueBar && targetBar) {
+                            // If the bar is already at the correct visual index (e.g. overwriting itself), just mark sorted
+                            if (valueBar === targetBar) {
+                                valueBar.className = 'bar bar-sorted';
+                            } else {
+                                // We need to SWAP the valueBar into the target position
+                                // and move the targetBar (which is garbage/placeholder now) to valueBar's old position
+                                // so that every index 0..N-1 still maps to a DOM element.
+                                
+                                const oldIndex = valueBar.getAttribute('data-index');
+                                const targetOrder = targetBar.style.order;
+                                const oldOrder = valueBar.style.order;
+
+                                // Swap visual orders
+                                valueBar.style.order = targetOrder;
+                                targetBar.style.order = oldOrder;
+                                
+                                // Swap logical indices
+                                valueBar.setAttribute('data-index', targetIndex);
+                                targetBar.setAttribute('data-index', oldIndex);
+                                
+                                // Mark the correct one as sorted
+                                valueBar.className = 'bar bar-sorted';
+                            }
+                        } else {
+                            // Log error for debugging, but prevent crash
+                            console.error(`Merge Sort Write Error: Value ${valueToWrite} or target index ${targetIndex} not found. ValueBar: ${!!valueBar}, TargetBar: ${!!targetBar}`);
+                        }
+                        break;
+
+                    case 'pivot':
+                        // Highlight the pivot element (Violet)
+                        const pivotBar = this.getBar(action.index);
+                        if (pivotBar) {
+                            pivotBar.className = 'bar bar-pivot';
+                        }
+                        break;
+
+                    case 'sorted':
+                        // Mark the element as permanently sorted (Green)
+                        const sortedBar = this.getBar(action.index);
+                        if (sortedBar) {
+                            sortedBar.className = 'bar bar-sorted';
+                        }
+                        break;
+                    
+                    case 'merge_segment':
+                        // Highlight the segment being worked on (Yellow)
+                        action.indices.forEach(i => {
+                            const bar = this.getBar(i);
+                            if (bar) {
+                                bar.className = 'bar bar-compare'; 
+                            }
+                        });
+                        break;
+                }
+
+                await delay(ANIMATION_SPEED_MS);
+
+                // For actions that don't transition to 'sorted', revert colors after delay
+                if (action.type !== 'sorted' && action.type !== 'write_value') {
+                    clearColors();
+                }
+
+                this.isAnimating = false;
+            }
+        }
+
+        // --- Sorting Logic (Generates Actions) ---
+
+        /**
+         * Records the steps for Bubble Sort.
+         */
+        function getBubbleSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+            const n = array.length;
+            let swapped;
+            for (let i = 0; i < n - 1; i++) {
+                swapped = false;
+                for (let j = 0; j < n - 1 - i; j++) {
+                    actions.push({ type: 'compare', indices: [j, j + 1] });
+                    if (array[j] > array[j + 1]) {
+                        actions.push({ type: 'swap', indices: [j, j + 1] });
+                        [array[j], array[j + 1]] = [array[j + 1], array[j]];
+                        swapped = true;
+                    }
+                }
+                actions.push({ type: 'sorted', index: n - 1 - i });
+                if (!swapped) {
+                    for (let k = 0; k < n - i - 1; k++) {
+                        actions.push({ type: 'sorted', index: k });
+                    }
+                    break;
+                }
+            }
+            if (actions.slice(-1)[0]?.type !== 'sorted') {
+                actions.push({ type: 'sorted', index: 0 });
+            }
+            return actions;
+        }
+
+        /**
+         * Records the steps for Insertion Sort (REFACTORED to use swaps).
+         */
+        function getInsertionSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+            const n = array.length;
+
+            for (let i = 1; i < n; i++) {
+                // Key element's current index
+                let keyIndex = i; 
+                let j = i - 1;
+
+                actions.push({ type: 'pivot', index: keyIndex }); // Highlight the element being inserted
+
+                // Loop backward, swapping the key element left until it is larger than its left neighbor
+                while (j >= 0 && array[j] > array[keyIndex]) {
+                    // Compare the two
+                    actions.push({ type: 'compare', indices: [j, keyIndex] }); 
+                    
+                    // Swap array[j] and array[keyIndex]
+                    actions.push({ type: 'swap', indices: [j, keyIndex] });
+                    [array[j], array[keyIndex]] = [array[keyIndex], array[j]];
+                    
+                    keyIndex = j; // The key has moved one step left
+                    j--;
+                }
+                
+                // Mark all elements up to i as sorted
+                for (let k = 0; k <= i; k++) {
+                    actions.push({ type: 'sorted', index: k });
+                }
+            }
+            return actions;
+        }
+
+        /**
+         * Records the steps for Quick Sort (in-place partitioning).
+         */
+        function getQuickSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+
+            function partition(low, high) {
+                const pivot = array[high];
+                actions.push({ type: 'pivot', index: high });
+                let i = low - 1;
+
+                for (let j = low; j < high; j++) {
+                    actions.push({ type: 'compare', indices: [j, high] }); 
+
+                    if (array[j] < pivot) {
+                        i++;
+                        actions.push({ type: 'swap', indices: [i, j] });
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                }
+
+                actions.push({ type: 'swap', indices: [i + 1, high] });
+                [array[i + 1], array[high]] = [array[high], array[i + 1]];
+
+                actions.push({ type: 'sorted', index: i + 1 });
+
+                return i + 1;
+            }
+
+            function quickSort(low, high) {
+                if (low < high) {
+                    const pi = partition(low, high);
+                    quickSort(low, pi - 1);
+                    quickSort(pi + 1, high);
+                } else if (low === high) {
+                    actions.push({ type: 'sorted', index: low });
+                }
+            }
+
+            quickSort(0, array.length - 1);
+            return actions;
+        }
+        
+        /**
+         * Records the steps for Selection Sort.
+         */
+        function getSelectionSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+            const n = array.length;
+
+            for (let i = 0; i < n - 1; i++) {
+                let min_idx = i;
+                
+                for (let j = i + 1; j < n; j++) {
+                    // Highlight comparison between current minimum and j
+                    actions.push({ type: 'compare', indices: [min_idx, j] }); 
+                    if (array[j] < array[min_idx]) {
+                        min_idx = j;
+                    }
+                }
+
+                // Swap the found minimum element with the element at index i
+                if (min_idx !== i) {
+                    actions.push({ type: 'swap', indices: [i, min_idx] });
+                    [array[i], array[min_idx]] = [array[min_idx], array[i]];
+                }
+                
+                // Mark element at i as sorted (it is the next smallest element)
+                actions.push({ type: 'sorted', index: i });
+            }
+            // Last element is automatically sorted
+            actions.push({ type: 'sorted', index: n - 1 }); 
+            return actions;
+        }
+
+        /**
+         * Records the steps for Heap Sort (in-place).
+         */
+        function getHeapSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+            const n = array.length;
+
+            // Helper to perform and record swap
+            const recordSwap = (i, j) => {
+                actions.push({ type: 'swap', indices: [i, j] });
+                [array[i], array[j]] = [array[j], array[i]];
+            };
+
+            // To heapify a subtree rooted with node i
+            function heapify(n, i) {
+                let largest = i; 
+                const l = 2 * i + 1; 
+                const r = 2 * i + 2; 
+                
+                actions.push({ type: 'pivot', index: i }); 
+
+                if (l < n) actions.push({ type: 'compare', indices: [largest, l] });
+                if (l < n && array[l] > array[largest]) {
+                    largest = l;
+                }
+
+                if (r < n) actions.push({ type: 'compare', indices: [largest, r] });
+                if (r < n && array[r] > array[largest]) {
+                    largest = r;
+                }
+
+                if (largest !== i) {
+                    recordSwap(i, largest);
+                    heapify(n, largest);
+                }
+            }
+
+            // Build max heap 
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                heapify(n, i);
+            }
+
+            // Extract elements
+            for (let i = n - 1; i > 0; i--) {
+                recordSwap(0, i);
+                actions.push({ type: 'sorted', index: i });
+                heapify(i, 0);
+            }
+            actions.push({ type: 'sorted', index: 0 });
+
+            return actions;
+        }
+
+        /**
+         * Records the steps for Merge Sort (FIXED visualization using 'write_value').
+         */
+        function getMergeSortActions(arr) {
+            const array = [...arr];
+            const actions = [];
+            
+            function merge(p, q, r) {
+                // 1. Highlight the full segment being considered (Yellow/Compare color)
+                const fullSegment = [];
+                for (let k = p; k <= r; k++) { fullSegment.push(k); }
+                actions.push({ type: 'merge_segment', indices: fullSegment }); 
+
+                // Create temporary arrays 
+                const L = array.slice(p, q + 1); 
+                const R = array.slice(q + 1, r + 1); 
+                
+                let i = 0; // index for L
+                let j = 0; // index for R
+                let k = p; // index for merged array (array)
+
+                // 2. Simulate Merge comparisons and write-back
+                while (i < L.length && j < R.length) {
+                    const originalIndexL = p + i;
+                    const originalIndexR = q + 1 + j;
+
+                    actions.push({ type: 'compare', indices: [originalIndexL, originalIndexR] }); 
+                    
+                    let valueToCopy;
+
+                    if (L[i] <= R[j]) {
+                        valueToCopy = L[i];
+                        i++;
+                    } else {
+                        valueToCopy = R[j];
+                        j++;
+                    }
+                    
+                    // Record 'write' action (moves the bar with valueToCopy to index k)
+                    actions.push({ type: 'write_value', index: k, value: valueToCopy });
+                    array[k] = valueToCopy; // Update internal array state
+                    k++;
+                }
+
+                // 3. Copy remaining elements of L[]
+                while (i < L.length) {
+                    let valueToCopy = L[i];
+                    actions.push({ type: 'write_value', index: k, value: valueToCopy });
+                    array[k] = valueToCopy;
+                    i++;
+                    k++;
+                }
+
+                // 4. Copy remaining elements of R[]
+                while (j < R.length) {
+                    let valueToCopy = R[j];
+                    actions.push({ type: 'write_value', index: k, value: valueToCopy });
+                    array[k] = valueToCopy;
+                    j++;
+                    k++;
+                }
+            }
+
+            function mergeSort(p, r) {
+                if (p < r) {
+                    const q = Math.floor((p + r) / 2);
+                    mergeSort(p, q);
+                    mergeSort(q + 1, r);
+                    merge(p, q, r);
+                } else if (p === r) {
+                    // Base case: single element is sorted
+                    actions.push({ type: 'sorted', index: p });
+                }
+            }
+
+            mergeSort(0, array.length - 1);
+            return actions;
+        }
+
+
+        // --- Main Visualization Runner ---
+
+        /**
+         * Runs the full visualization for a single algorithm.
+         */
+        async function runVisualization(visualizer, actions) {
+            let nextIndex = 0;
+
+            while (nextIndex < actions.length && isRunning) {
+                const action = actions[nextIndex];
+
+                // Execute the action visually
+                await visualizer.executeAction(action);
+
+                nextIndex++;
+            }
+            if (isRunning) {
+                 console.log(`${visualizer.container.id} finished sorting.`);
+            }
+        }
+
+        /**
+         * Initializes and starts all six visualizations.
+         */
+        async function startAllVisualizations() {
+            if (isRunning) return;
+            isRunning = true;
+            startButton.disabled = true;
+            resetButton.disabled = true;
+            speedSelector.disabled = true;
+
+            // Generate actions for all six algorithms
+            const bubbleActions = getBubbleSortActions(initialArray);
+            const insertionActions = getInsertionSortActions(initialArray);
+            const quickActions = getQuickSortActions(initialArray);
+            const selectionActions = getSelectionSortActions(initialArray);
+            const heapActions = getHeapSortActions(initialArray);
+            const mergeActions = getMergeSortActions(initialArray);
+
+            // Initialize visualizers
+            const bubbleViz = new Visualizer('bubbleSortVisualizer');
+            const insertionViz = new Visualizer('insertionSortVisualizer');
+            const quickViz = new Visualizer('quickSortVisualizer');
+            const selectionViz = new Visualizer('selectionSortVisualizer');
+            const heapViz = new Visualizer('heapSortVisualizer');
+            const mergeViz = new Visualizer('mergeSortVisualizer');
+
+            // Set up an array of promises to run them concurrently
+            const promises = [
+                runVisualization(bubbleViz, bubbleActions),
+                runVisualization(insertionViz, insertionActions),
+                runVisualization(quickViz, quickActions),
+                runVisualization(selectionViz, selectionActions),
+                runVisualization(heapViz, heapActions),
+                runVisualization(mergeViz, mergeActions)
+            ];
+
+            // Wait for all to finish
+            await Promise.all(promises);
+
+            isRunning = false;
+            startButton.disabled = false;
+            resetButton.disabled = false;
+            speedSelector.disabled = false;
+        }
+        
+        /**
+         * Main function to set up the application state.
+         */
+        function setup() {
+            // 1. Generate the initial random array
+            initialArray = generateRandomArray();
+
+            // 2. Render the initial array state in all containers
+            renderInitialArray('bubbleSortVisualizer', initialArray);
+            renderInitialArray('insertionSortVisualizer', initialArray);
+            renderInitialArray('quickSortVisualizer', initialArray);
+            renderInitialArray('selectionSortVisualizer', initialArray);
+            renderInitialArray('heapSortVisualizer', initialArray);
+            renderInitialArray('mergeSortVisualizer', initialArray);
+
+
+            // 3. Set initial speed
+            ANIMATION_SPEED_MS = parseInt(speedSelector.value);
+
+            // 4. Attach event listeners
+            startButton.addEventListener('click', startAllVisualizations);
+            resetButton.addEventListener('click', () => {
+                if (isRunning) return;
+                setup(); // Re-run setup to reset array and visualization
+            });
+            speedSelector.addEventListener('change', (e) => {
+                ANIMATION_SPEED_MS = parseInt(e.target.value);
+            });
+            
+            startButton.textContent = 'Start Visualization';
+        }
+
+        // Initialize the app on window load
+        window.onload = setup;
+    </script>
+</body>
+</html>
